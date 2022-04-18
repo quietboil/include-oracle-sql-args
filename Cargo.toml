@@ -1,0 +1,18 @@
+[package]
+name = "include-oracle-sql-args"
+description = "proc-macro(s) that assist include-oracle-sql in generating Yesql-like methods for using SQL in Rust"
+version = "0.1.0"
+authors = ["Alex Demenchuk <alexander.demenchuk@gmail.com>"]
+edition = "2018"
+license = "MIT"
+keywords = ["database","sql","macro"]
+categories = ["database"]
+repository = "https://github.com/quietboil/include-oracle-sql-args"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = "1.0"
+proc-macro2 = "1.0"
+quote = "1.0"
