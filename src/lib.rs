@@ -63,11 +63,25 @@ assert_eq!(args, (31, "text", &["a", "b", "c"]));
 let id = 19;
 let name = "unknown";
 let data = 3.14;
-let args = include_oracle_sql_args::map!(name data id => "UPDATE xxx SET a = " :name ", b = " :name ", c = " :data " WHERE i = " :id " OR ( x = " :name " AND i != " :id ")");
+let args = include_oracle_sql_args::map!(id name data => "UPDATE xxx SET a = " :name ", b = " :name ", c = " :data " WHERE i = " :id " OR ( x = " :name " AND i != " :id ")");
 assert_eq!(args, (
+    ("ID",   19),
     ("NAME", "unknown"),
     ("DATA", 3.14),
-    ("ID",   19),
+));
+```
+
+### Reordered SQL Parameters
+
+```
+let a1 = 31;
+let a2 = "text";
+let a3 = &["a", "b", "c"];
+let args = include_oracle_sql_args::map!(a1 a2 a3 => "UPDATE xxx SET a = " :a2 ", :b = " :a1 " WHERE c IN (" #a3 ")");
+assert_eq!(args, (
+    ("A1", 31), 
+    ("A2", "text"),
+    ("A3", &["a", "b", "c"]),
 ));
 ```
 
@@ -93,7 +107,7 @@ pub fn map(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 
     if method_args.len() == 1 {
         tokens.append(method_args.remove(0));
-    } else if method_args.len() == sql_args.len() {
+    } else if method_args == sql_args {
         let mut items = TokenStream::new();
         if method_args.len() == 2 {
             items.append_terminated(method_args, Punct::new(',', Spacing::Alone));
